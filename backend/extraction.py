@@ -48,6 +48,8 @@ You are given:
 1. TRANSCRIPT: what the creator said in the video.
 2. DESCRIPTION: optional caption or comment text, often containing measurements.
 
+- Give the recipe a short title of 6 words or fewer.
+
 Sources and quantities:
 - Take the steps and their order mainly from the TRANSCRIPT.
 - Take quantities from the DESCRIPTION first, then the TRANSCRIPT.
