@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Recipe } from "./types";
 import ReviewScreen from "./ReviewScreen";
+import CookingScreen from "./CookingScreen";
 
 type Screen = "upload" | "review" | "cooking";
 
@@ -82,10 +83,7 @@ export default function App() {
       )}
 
       {screen === "cooking" && recipe && (
-        <section>
-          <p>Cooking Mode coming next.</p>
-          <button onClick={() => setScreen("review")}>← Back to recipe</button>
-        </section>
+        <CookingScreen recipe={recipe} onExit={() => setScreen("review")} />
       )}
     </main>
   );
