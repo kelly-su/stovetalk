@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from transcription import transcribe
 from extraction import extract_recipe
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -29,3 +30,25 @@ def extract(video: UploadFile = File(...), description: str = Form("")):
 
     recipe = extract_recipe(transcript, description)
     return {"transcript": transcript, "recipe": recipe.model_dump()}
+
+class RecipeRequest(BaseModel):
+    transcript: str
+    description: str = ""
+
+
+@app.post("/transcribe")
+def transcribe_video(video: UploadFile = File(...)):
+    data = video.file.read()
+    transcript = transcribe(data, video.filename)
+    if len(transcript.split()) < 15:
+        raise HTTPException(
+            status_code=422,
+            detail="Couldn't hear enough speech in this video to build a recipe.",
+        )
+    return {"transcript": transcript}
+
+
+@app.post("/recipe")
+def build_recipe(req: RecipeRequest):
+    recipe = extract_recipe(req.transcript, req.description)
+    return {"recipe": recipe.model_dump()}
