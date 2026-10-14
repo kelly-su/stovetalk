@@ -3,6 +3,8 @@ import type { Recipe } from "./types";
 import ReviewScreen from "./ReviewScreen";
 import CookingScreen from "./CookingScreen";
 
+import { ConversationProvider } from "@elevenlabs/react";
+
 type Screen = "upload" | "review" | "cooking";
 
 export default function App() {
@@ -83,7 +85,9 @@ export default function App() {
       )}
 
       {screen === "cooking" && recipe && (
-        <CookingScreen recipe={recipe} onExit={() => setScreen("review")} />
+        <ConversationProvider>
+          <CookingScreen recipe={recipe} onExit={() => setScreen("review")} />
+        </ConversationProvider>
       )}
     </main>
   );
