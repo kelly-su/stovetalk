@@ -76,9 +76,12 @@ export default function CookingScreen({ recipe, onExit }: Props) {
     const conversation = useConversation({
         clientTools: {
             next_step: async () => {
-                if (!startedRef.current) return describeStep(goTo(0)); // "start" reads step 1
+                if (!startedRef.current) {
+                startedRef.current = true;
+                return describeStep(stepRef.current); // resume where the user is
+                }
                 if (stepRef.current === total - 1) {
-                    return `You're already on the last step. ${describeStep(stepRef.current)}`;
+                return `You're already on the last step. ${describeStep(stepRef.current)}`;
                 }
                 return describeStep(goTo(stepRef.current + 1));
             },
@@ -100,6 +103,7 @@ export default function CookingScreen({ recipe, onExit }: Props) {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true });
             const { token } = await api("/agent-token");
+            startedRef.current = false; // new session: the first "start"/"next" reads the current step
             await conversation.startSession({ conversationToken: token, connectionType: "webrtc" });
         } catch (e) {
             setVoiceError(e instanceof Error ? e.message : "Couldn't start voice.");
