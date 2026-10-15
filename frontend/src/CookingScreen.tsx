@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useConversation } from "@elevenlabs/react";
 import type { Recipe } from "./types";
 
-const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
+import { api } from "./api";
 
 type Props = {
     recipe: Recipe;
@@ -35,6 +35,20 @@ function findIngredient(recipe: Recipe, stepIndex: number, query: string): strin
     return `${inRecipe.name}: ${totalText}${stepText}`;
 }
 
+function ingredientLines(recipe: Recipe, stepIndex: number): string[] {
+    return recipe.steps[stepIndex].ingredients.map((ing) => {
+        if (ing.amount !== "not specified") return `${ing.amount} ${ing.name}`;
+        const total = recipe.ingredients.find((r) => r.name === ing.name)?.quantity;
+        return total && total !== "not specified" ? `${total} ${ing.name}` : ing.name;
+    });
+}
+
+function joinList(items: string[]): string {
+    if (items.length <= 1) return items.join("");
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
+}
+
 export default function CookingScreen({ recipe, onExit }: Props) {
     const total = recipe.steps.length;
     const [currentStep, setCurrentStep] = useState(0);
@@ -53,8 +67,10 @@ export default function CookingScreen({ recipe, onExit }: Props) {
     }
 
     function describeStep(index: number): string {
+        const lines = ingredientLines(recipe, index);
+        const needs = lines.length > 0 ? ` You'll need ${joinList(lines)}.` : "";
         const lastNote = index === total - 1 ? " This is the last step." : "";
-        return `Step ${index + 1} of ${total}: ${recipe.steps[index].instruction}${lastNote}`;
+        return `Step ${index + 1} of ${total}: ${recipe.steps[index].instruction}${needs}${lastNote}`;
     }
 
     const conversation = useConversation({
@@ -82,8 +98,9 @@ export default function CookingScreen({ recipe, onExit }: Props) {
     async function startVoice() {
         setVoiceError(null);
         try {
-            await navigator.mediaDevices.getUserMedia({ audio: true }); // ask for mic permission
-            await conversation.startSession({ agentId: AGENT_ID, connectionType: "webrtc" });
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            const { token } = await api("/agent-token");
+            await conversation.startSession({ conversationToken: token, connectionType: "webrtc" });
         } catch (e) {
             setVoiceError(e instanceof Error ? e.message : "Couldn't start voice.");
         }
@@ -149,15 +166,8 @@ export default function CookingScreen({ recipe, onExit }: Props) {
                 <>
                     <p className="step-label">For this step</p>
                     <ul className="step-ingredients">
-                        {step.ingredients.map((ing) => (
-                            <li key={ing.name}>
-                                {ing.amount !== "not specified"
-                                    ? `${ing.amount} ${ing.name}`
-                                    : (() => {
-                                        const total = recipe.ingredients.find((r) => r.name === ing.name)?.quantity;
-                                        return total && total !== "not specified" ? `${total} ${ing.name}` : ing.name;
-                                    })()}
-                            </li>
+                        {ingredientLines(recipe, currentStep).map((line) => (
+                            <li key={line}>{line}</li>
                         ))}
                     </ul>
                 </>
