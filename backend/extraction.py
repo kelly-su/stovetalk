@@ -67,6 +67,8 @@ Steps:
 - Split long steps into multiple steps.
 - Merge trivial follow-up actions into the step before them instead of making them their own step.
   Examples: "remove and set aside", "transfer to a plate", "turn off the heat", "let it rest briefly".
+- Never drop a cooking action. If the video shows preparing a separate component
+(e.g. boiling eggs, sautéing spinach), give it its own step.
 - Keep a cooking or waiting time in the same step as the action that starts it
   (e.g. "Put the potato in the air fryer at 200°C for 50 minutes").
 - Use the fewest steps possible while keeping each step short enough to say aloud.
