@@ -31,6 +31,7 @@ I built Stovetalk to make cooking from short recipe videos easier. They're a gre
 - **Steps are written to be heard.** Each step has one main action and is short enough to say in a few seconds. Ingredients split across steps (say, two garlic cloves used one at a time) show the right amount for each step.
 - **Amounts are read with every step.** The app attaches each step's amounts before the agent reads it, so you hear what you need without looking at the screen, and the voice always matches the recipe you reviewed.
 - **Progress reflects what's actually happening.** Transcription and extraction are separate requests, so the loading screen switches stages only when each one really finishes.
+- **Protected without accounts.** Every backend route requires a passcode, and the voice agent is private: the browser can only start a session with a short-lived token the backend issues after the passcode check. API keys and the agent ID never reach the browser.
 - **Kept small on purpose.** No accounts, database, or link scraping. The app only ever needs one recipe at a time, and uploading a file works with any platform.
 
 ## What I learned
@@ -55,12 +56,16 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Add your keys to `backend/.env`:
+Fill in `backend/.env`:
 
 ```
 ELEVENLABS_API_KEY=your_key
 GEMINI_API_KEY=your_key
+ELEVENLABS_AGENT_ID=your_agent_id
+APP_PASSCODE=choose_a_passcode
 ```
+
+The ElevenLabs key needs Speech to Text access and ElevenAgents write access. The agent ID comes from step 2.
 
 Then start the server:
 
@@ -81,36 +86,28 @@ Create an agent in the ElevenLabs Agents dashboard and give it a system prompt t
 | `get_current_step` | none | Returns the current step without moving |
 | `get_ingredient` | `ingredient_name` (string) | Returns the amount for the current step and the whole recipe |
 
+Finally, turn on **Enable authentication** in the agent's security settings so it can only be reached through the backend.
+
 ### 3. Frontend
 
 ```bash
 cd frontend
 npm install
-```
-
-Create `frontend/.env` with your agent's ID:
-
-```
-VITE_ELEVENLABS_AGENT_ID=your_agent_id
-```
-
-Then run:
-
-```bash
 npm run dev
 ```
 
-Open the local address Vite prints, with the backend running in a separate terminal.
+Open the local address Vite prints, with the backend running in a separate terminal, and enter the passcode you set. The frontend talks to `http://localhost:8000` by default; set `VITE_API_URL` in `frontend/.env` to point it somewhere else.
 
 ## Project structure
 
 ```
 backend/
-  main.py            API routes (/transcribe, /recipe)
+  main.py            API routes, passcode check, voice session tokens
   transcription.py   ElevenLabs Scribe call
   extraction.py      Gemini extraction, schema, and cleanup rules
 frontend/src/
-  App.tsx            Upload screen and screen switching
+  App.tsx            Passcode and upload screens, screen switching
+  api.ts             Backend requests with the passcode attached
   ReviewScreen.tsx   Editable recipe review
   CookingScreen.tsx  Step-by-step Cooking Mode and voice agent tools
   types.ts           Shared recipe types
@@ -119,6 +116,6 @@ frontend/src/
 
 ## What's next
 
-- **Mobile.** People realistically cook with a phone or tablet on the counter. The first step would be deploying the backend and making the web app fully responsive, so the microphone works in a phone's browser. A React Native version could reuse most of the app logic.
+- **Mobile.** People realistically cook with a phone or tablet on the counter. The first step is a deployed, fully responsive version, so the microphone works in a phone's browser. A React Native version could reuse most of the app logic.
 - **Timers.** "Set a timer for ten minutes" is the most natural thing to ask mid-recipe.
 - **On-screen text.** Some measurements only appear as text in the video. Reading them from video frames would cover what the transcript and caption miss.
