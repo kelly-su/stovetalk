@@ -8,8 +8,8 @@ Stovetalk lets you cook along with a recipe video without touching your screen. 
 
 <table>
   <tr>
-    <td><img src="docs/cooking-mode.png" alt="Cooking Mode reading step 5 of 11 while listening for voice commands"></td>
-    <td><img src="docs/review.png" alt="Review screen showing where each amount came from, with missing amounts highlighted"></td>
+    <td><img src="docs/listening_cooking_mode.png" alt="Cooking Mode reading step 5 of 11 while listening for voice commands"></td>
+    <td><img src="docs/review_screen.png" alt="Review screen showing where each amount came from, with missing amounts highlighted"></td>
   </tr>
   <tr>
     <td align="center">Cooking Mode: one step at a time, with voice</td>
