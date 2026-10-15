@@ -2,6 +2,8 @@
 
 Stovetalk lets you cook along with a recipe video without touching your screen. It turns the video into a step-by-step recipe, then reads it to you and answers questions while you cook.
 
+**Live demo:** [stovetalk.vercel.app](https://stovetalk.vercel.app) (passcode-protected; the passcode is available on request)
+
 ## Why I built it
 
 I built Stovetalk to make cooking from short recipe videos easier. They're a great way to discover recipes, but awkward to actually cook from: you replay the video, scrub back to catch a measurement, and end up tapping your phone with messy hands. I wanted to see whether voice could fix that, and to build something with the ElevenLabs platform along the way.
@@ -23,6 +25,7 @@ I built Stovetalk to make cooking from short recipe videos easier. They're a gre
 | Transcription | ElevenLabs Scribe |
 | Recipe extraction | Google Gemini (structured JSON output) |
 | Voice assistant | ElevenLabs Agents with client tools |
+| Hosting | Vercel (frontend), Render (backend) |
 
 ## Design decisions
 
@@ -41,6 +44,13 @@ I built Stovetalk to make cooking from short recipe videos easier. They're a gre
 - Lighter models were noticeably less reliable at following the extraction rules, so they're only used as a last resort.
 - Free-tier models are often overloaded, so extraction automatically falls back to other models when one is busy.
 - The same input can produce slightly different recipes from run to run. A temperature of 0 helps, and the review step catches the rest.
+
+## Deployment
+
+The frontend is hosted on Vercel and the backend on Render's free tier. The free backend sleeps when idle, so the first request after a while can take about a minute.
+
+- **Render:** root directory `backend`, start command `uvicorn main:app --host 0.0.0.0 --port $PORT`, the same environment variables as `backend/.env`, plus `ALLOWED_ORIGINS` set to the frontend's URL.
+- **Vercel:** root directory `frontend`, with `VITE_API_URL` set to the backend's URL.
 
 ## Running it locally
 
@@ -116,6 +126,6 @@ frontend/src/
 
 ## What's next
 
-- **Mobile.** People realistically cook with a phone or tablet on the counter. The first step is a deployed, fully responsive version, so the microphone works in a phone's browser. A React Native version could reuse most of the app logic.
+- **Native mobile app.** The live site already works in a phone's browser, but a React Native version could reuse most of the app logic and feel more at home on the counter.
 - **Timers.** "Set a timer for ten minutes" is the most natural thing to ask mid-recipe.
 - **On-screen text.** Some measurements only appear as text in the video. Reading them from video frames would cover what the transcript and caption miss.
