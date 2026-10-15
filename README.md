@@ -1,6 +1,6 @@
 # Stovetalk
 
-![Tests](https://github.com/YOUR-USERNAME/stovetalk/actions/workflows/tests.yml/badge.svg)
+![Tests](https://github.com/kelly-su/stovetalk/actions/workflows/tests.yml/badge.svg)
 
 Stovetalk lets you cook along with a recipe video without touching your screen. It turns the video into a step-by-step recipe, then reads it to you and answers questions while you cook.
 
