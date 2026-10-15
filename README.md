@@ -6,6 +6,17 @@ Stovetalk lets you cook along with a recipe video without touching your screen. 
 
 **Live demo:** [stovetalk.vercel.app](https://stovetalk.vercel.app) (passcode-protected; the passcode is available on request)
 
+<table>
+  <tr>
+    <td><img src="docs/cooking-mode.png" alt="Cooking Mode reading step 5 of 11 while listening for voice commands"></td>
+    <td><img src="docs/review.png" alt="Review screen showing where each amount came from, with missing amounts highlighted"></td>
+  </tr>
+  <tr>
+    <td align="center">Cooking Mode: one step at a time, with voice</td>
+    <td align="center">Review: every amount shows its source</td>
+  </tr>
+</table>
+
 ## Why I built it
 
 I built Stovetalk to make cooking from short recipe videos easier. They're a great way to discover recipes, but awkward to actually cook from: you replay the video, scrub back to catch a measurement, and end up tapping your phone with messy hands. I wanted to see whether voice could fix that, and to build something with the ElevenLabs platform along the way.
